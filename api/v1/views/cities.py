@@ -22,7 +22,7 @@ def all_cities(state_id):
     else:
         city_list = obj.cities()
     new_list = []
-    for city_obj in cities:
+    for city_obj in city_list:
         new_list.append(city_obj.to_dict())
     return jsonify(new_list)
 
@@ -58,8 +58,7 @@ def create_city(state_id):
         abort(404, message="Not a JSON")
     if "name" not in data:
         abort(404, message="Missing name")
-    city_obj = City(data["name"])
-    city_obj.state_id = state_id
+    city_obj = City(state_id, data["name"])
     return jsonify(city_obj.to_dict()), 201
 
 
@@ -73,5 +72,8 @@ def update_city(city_id):
     if data is None:
         abort(404, message="Not a JSON")
     updated = obj.to_dict()
-    updated["name"] = data["name"]
+    for key, value in data.items():
+        if key in ("id", "state_id", "created_at", "updated_at"):
+            continue
+        updated[key] = value
     return jsonify(updated), 200

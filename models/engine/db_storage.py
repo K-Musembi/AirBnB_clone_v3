@@ -88,6 +88,7 @@ class DBStorage:
         """count number of objects"""
         dct = self.all()
         if cls is not None:
+            count = 0
             for obj in dct.values():
                 if obj.__class__.__name__ == cls.__name__:
                     count += 1

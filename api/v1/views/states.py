@@ -47,8 +47,9 @@ def create_state():
         abort(404, message="Not a JSON")
     if "name" not in data:
         abort(404, message="Missing name")
-    state = State(data["name"])
-    return jsonify(state.to_dict()), 201
+    new_state = State(data["name"])
+    storage.new(new_state)
+    return jsonify(new_state.to_dict()), 201
 
 
 @app_views.route("/states/<state_id>", methods=["PUT"], strict_slashes=False)
@@ -61,5 +62,8 @@ def update_state(state_id):
     if data is None:
         abort(404, message="Not a JSON")
     updated = obj.to_dict()
-    updated["name"] = data["name"]
+    for key, value in data.items():
+        if key in ("id", "created_at", "updated_at"):
+            continue
+        updated[key] = value
     return jsonify(updated), 200
